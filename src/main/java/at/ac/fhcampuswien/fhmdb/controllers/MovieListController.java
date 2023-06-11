@@ -163,14 +163,14 @@ public class MovieListController implements Initializable, Observer {
             // sortMovies(SortedState.ASCENDING);
             movieSorter.setState(new AscendingState());
             movieSorter.sortMovies(observableMovies);
-            sortedState = SortedState.ASCENDING;
+//            sortedState = SortedState.ASCENDING;
         }
         else if (movieSorter.getState() instanceof AscendingState) {
             //} else if (sortedState == SortedState.ASCENDING) {
             // sortMovies(SortedState.DESCENDING);
             movieSorter.setState(new DescendingState());
             movieSorter.sortMovies(observableMovies);
-            sortedState = SortedState.DESCENDING;
+//            sortedState = SortedState.DESCENDING;
         }
     }
     // sort movies based on sortedState
@@ -268,6 +268,8 @@ public class MovieListController implements Initializable, Observer {
         sortMovies();
     }
 
+
+    // TODO update logic with alert
     @Override
     public void update(ObservableMessages messages) {
         if(messages == ObservableMessages.ADDED){

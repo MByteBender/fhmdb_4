@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.controllers.MainController;
 import at.ac.fhcampuswien.fhmdb.enums.UIComponent;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +13,10 @@ import java.util.Objects;
 public class FhmdbApplication extends Application {
     @Override
     public void start(Stage stage) {
-        FXMLLoader fxmlLoader = new FXMLLoader(FhmdbApplication.class.getResource(UIComponent.HOME.path));
+        // TODO FACTORY PATERN
+        ControllerFactory myFactory = ControllerFactory.getInstance();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainController.class.getResource(UIComponent.HOME.path));
+        fxmlLoader.setControllerFactory(myFactory);
 
         try{
             Scene scene = new Scene(fxmlLoader.load(), 890, 620);
