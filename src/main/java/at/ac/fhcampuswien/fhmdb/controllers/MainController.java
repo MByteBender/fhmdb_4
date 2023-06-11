@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb.controllers;
 
+import at.ac.fhcampuswien.fhmdb.ControllerFactory;
 import at.ac.fhcampuswien.fhmdb.enums.UIComponent;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.observer.ObservableMessages;
@@ -30,10 +31,16 @@ public class MainController implements Observer {
     private BorderPane mainPane;
 
     private boolean isMenuCollapsed = true;
+    private final ControllerFactory controllerFactory = ControllerFactory.getInstance();
 
     private HamburgerBasicCloseTransition transition;
 
     public void initialize() {
+        // TODO CONTROLLER FACTORY
+        FXMLLoader loader = new FXMLLoader(MainController.class.getResource(UIComponent.HOME.path));
+        loader.setControllerFactory(controllerFactory);
+
+
         transition = new HamburgerBasicCloseTransition(hamburgerMenu);
         transition.setRate(-1);
         drawer.toBack();
