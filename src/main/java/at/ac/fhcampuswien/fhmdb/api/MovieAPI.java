@@ -23,6 +23,7 @@ public class MovieAPI {
         return url.toString();
     }
 
+    // TODO builder pattern
     private static String buildUrl(String query, Genre genre, String releaseYear, String ratingFrom) {
 
         return new MovieAPIRequestBuilder(URL)

@@ -9,6 +9,8 @@ import at.ac.fhcampuswien.fhmdb.database.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
+import at.ac.fhcampuswien.fhmdb.observer.ObservableMessages;
+import at.ac.fhcampuswien.fhmdb.observer.Observer;
 import at.ac.fhcampuswien.fhmdb.statePattern.UnsortedState;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import at.ac.fhcampuswien.fhmdb.ui.UserDialog;
@@ -24,6 +26,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 
 
@@ -33,7 +37,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MovieListController implements Initializable {
+public class MovieListController implements Initializable, Observer {
     @FXML
     public JFXButton searchBtn;
 
@@ -74,7 +78,7 @@ public class MovieListController implements Initializable {
                     movie.getLengthInMinutes(),
                     movie.getRating());
             try {
-                WatchlistRepository repository = new WatchlistRepository();
+                WatchlistRepository repository =  WatchlistRepository.getInstance();
                 repository.addToWatchlist(watchlistMovieEntity);
             } catch (DataBaseException e) {
                 UserDialog dialog = new UserDialog("Database Error", "Could not add movie to watchlist");
@@ -84,10 +88,17 @@ public class MovieListController implements Initializable {
         }
     };
 
+
+    // TODO register add observer
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeState();
         initializeLayout();
+        try {
+            WatchlistRepository.getInstance().addObserver(this);
+        } catch (DataBaseException e) {
+            e.printStackTrace();
+        }
     }
 
     public void initializeState() {
@@ -145,7 +156,7 @@ public class MovieListController implements Initializable {
         observableMovies.addAll(movies);
     }
 
-    // TODO statePattern hier stat mit enum
+    // TODO statePattern hier statt mit enum
     public void sortMovies(){
         if(movieSorter.getState() instanceof UnsortedState || movieSorter.getState() instanceof DescendingState) {
             //if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
@@ -255,5 +266,14 @@ public class MovieListController implements Initializable {
 
     public void sortBtnClicked(ActionEvent actionEvent) {
         sortMovies();
+    }
+
+    @Override
+    public void update(ObservableMessages messages) {
+        if(messages == ObservableMessages.ADDED){
+            new Alert(Alert.AlertType.INFORMATION, "Movie was successfully added to the Watchlist", ButtonType.OK).show();
+        } else {
+            new Alert(Alert.AlertType.WARNING, "Movie is already in Watchlist!", ButtonType.OK).show();
+        }
     }
 }
