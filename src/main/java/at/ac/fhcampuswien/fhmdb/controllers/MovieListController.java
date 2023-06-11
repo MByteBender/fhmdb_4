@@ -9,8 +9,13 @@ import at.ac.fhcampuswien.fhmdb.database.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
+import at.ac.fhcampuswien.fhmdb.statePattern.UnsortedState;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import at.ac.fhcampuswien.fhmdb.ui.UserDialog;
+import at.ac.fhcampuswien.fhmdb.statePattern.AscendingState;
+import at.ac.fhcampuswien.fhmdb.statePattern.DescendingState;
+import at.ac.fhcampuswien.fhmdb.statePattern.MovieSorter;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
@@ -20,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,6 +56,7 @@ public class MovieListController implements Initializable {
     public JFXButton sortBtn;
 
     public List<Movie> allMovies;
+    private MovieSorter movieSorter = new MovieSorter();
 
     protected ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
@@ -137,25 +144,36 @@ public class MovieListController implements Initializable {
         observableMovies.clear();
         observableMovies.addAll(movies);
     }
+
+    // TODO statePattern hier stat mit enum
     public void sortMovies(){
-        if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
-            sortMovies(SortedState.ASCENDING);
-        } else if (sortedState == SortedState.ASCENDING) {
-            sortMovies(SortedState.DESCENDING);
+        if(movieSorter.getState() instanceof UnsortedState || movieSorter.getState() instanceof DescendingState) {
+            //if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
+            // sortMovies(SortedState.ASCENDING);
+            movieSorter.setState(new AscendingState());
+            movieSorter.sortMovies(observableMovies);
+            sortedState = SortedState.ASCENDING;
+        }
+        else if (movieSorter.getState() instanceof AscendingState) {
+            //} else if (sortedState == SortedState.ASCENDING) {
+            // sortMovies(SortedState.DESCENDING);
+            movieSorter.setState(new DescendingState());
+            movieSorter.sortMovies(observableMovies);
+            sortedState = SortedState.DESCENDING;
         }
     }
     // sort movies based on sortedState
     // by default sorted state is NONE
     // afterwards it switches between ascending and descending
-    public void sortMovies(SortedState sortDirection) {
-        if (sortDirection == SortedState.ASCENDING) {
-            observableMovies.sort(Comparator.comparing(Movie::getTitle));
-            sortedState = SortedState.ASCENDING;
-        } else {
-            observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
-            sortedState = SortedState.DESCENDING;
-        }
-    }
+//    public void sortMovies(SortedState sortDirection) {
+//        if (sortDirection == SortedState.ASCENDING) {
+//            observableMovies.sort(Comparator.comparing(Movie::getTitle));
+//            sortedState = SortedState.ASCENDING;
+//        } else {
+//            observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
+//            sortedState = SortedState.DESCENDING;
+//        }
+//    }
 
     public List<Movie> filterByQuery(List<Movie> movies, String query){
         if(query == null || query.isEmpty()) return movies;
@@ -213,7 +231,7 @@ public class MovieListController implements Initializable {
         // applyAllFilters(searchQuery, genre);
 
         if(sortedState != SortedState.NONE) {
-            sortMovies(sortedState);
+            sortMovies();
         }
     }
 
