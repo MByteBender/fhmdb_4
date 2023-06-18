@@ -131,6 +131,8 @@ public class MainController implements Observer {
         setContent(UIComponent.MOVIELIST.path);
     }
 
+
+    //TODO alert of observer
     @Override
     public void update(ObservableMessages messages) {
         if(messages == ObservableMessages.ADDED){

@@ -1,3 +1,4 @@
+// Klasse zur Verwaltung der Datenbankverbindung und der DAOs
 package at.ac.fhcampuswien.fhmdb.database;
 
 import com.j256.ormlite.dao.Dao;
@@ -17,6 +18,7 @@ public class DatabaseManager {
 
     private final Dao<WatchlistMovieEntity, Long> watchlistMovieDao;
 
+    // Konstruktor (privat, um das Singleton-Muster zu implementieren)
     private DatabaseManager() throws DataBaseException {
         try {
             createConnectionSource();
@@ -27,7 +29,7 @@ public class DatabaseManager {
         }
     }
 
-    // get singleton database instance
+    // Methode zur Rückgabe der Singleton-Instanz der Klasse
     public static DatabaseManager getInstance() throws DataBaseException {
         if (instance == null) {
             instance = new DatabaseManager();
@@ -35,6 +37,7 @@ public class DatabaseManager {
         return instance;
     }
 
+    // Methode zur Rückgabe der ConnectionSource
     public static ConnectionSource getConnectionSource() throws DataBaseException {
         if (connectionSource == null) {
             createConnectionSource();
@@ -42,16 +45,16 @@ public class DatabaseManager {
         return connectionSource;
     }
 
+    // Erstellt eine neue ConnectionSource zur Datenbank
     private static void createConnectionSource() throws DataBaseException {
         try {
             connectionSource = new JdbcConnectionSource(DB_URL, user, pass);
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage());
         }
-
     }
 
-    // close the db connection
+    // Schließt die Datenbankverbindung
     public static void closeConnectionSource() throws DataBaseException {
         if(connectionSource != null){
             try {
@@ -63,16 +66,17 @@ public class DatabaseManager {
         }
     }
 
-    // creates the tables in the database
+    // Erstellt die Tabellen in der Datenbank (falls sie nicht vorhanden sind)
     private static void createTables() throws SQLException {
         TableUtils.createTableIfNotExists(connectionSource, WatchlistMovieEntity.class);
     }
 
-    // removes tables from database
+    // Entfernt die Tabellen aus der Datenbank
     private static void dropTables() throws SQLException {
         TableUtils.dropTable(connectionSource, WatchlistMovieEntity.class, true);
     }
 
+    // Gibt das DAO für die WatchlistMovieEntity zurück
     public Dao<WatchlistMovieEntity, Long> getWatchlistDao() {
         return watchlistMovieDao;
     }

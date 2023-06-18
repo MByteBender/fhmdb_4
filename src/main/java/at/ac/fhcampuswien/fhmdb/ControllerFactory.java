@@ -4,9 +4,7 @@ import javafx.util.Callback;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {
 
-    //MainController.class -> new MainController()
-    //MovieController.class -> new MovieController()
-    //MainController.class -> new MainController()
+
 
     private static ControllerFactory instance;
 

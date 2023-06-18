@@ -30,7 +30,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,6 +65,9 @@ public class MovieListController implements Initializable, Observer {
 
     protected SortedState sortedState;
 
+    //TODO List controller zur ansicht der movies Homeansicht
+
+    // Event-Handler für den Klick auf "Add to Watchlist"
     private final ClickEventHandler onAddToWatchlistClicked = (clickedItem) -> {
         if (clickedItem instanceof Movie movie) {
             WatchlistMovieEntity watchlistMovieEntity = new WatchlistMovieEntity(
@@ -78,7 +80,7 @@ public class MovieListController implements Initializable, Observer {
                     movie.getLengthInMinutes(),
                     movie.getRating());
             try {
-                WatchlistRepository repository =  WatchlistRepository.getInstance();
+                WatchlistRepository repository = WatchlistRepository.getInstance();
                 repository.addToWatchlist(watchlistMovieEntity);
             } catch (DataBaseException e) {
                 UserDialog dialog = new UserDialog("Database Error", "Could not add movie to watchlist");
@@ -88,8 +90,6 @@ public class MovieListController implements Initializable, Observer {
         }
     };
 
-
-    // TODO register add observer
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeState();
@@ -101,11 +101,12 @@ public class MovieListController implements Initializable, Observer {
         }
     }
 
+    // Initialisiert den Anfangszustand der Filmliste
     public void initializeState() {
         List<Movie> result = new ArrayList<>();
         try {
             result = MovieAPI.getAllMovies();
-        } catch (MovieApiException e){
+        } catch (MovieApiException e) {
             UserDialog dialog = new UserDialog("MovieAPI Error", "Could not load movies from api");
             dialog.show();
         }
@@ -115,64 +116,55 @@ public class MovieListController implements Initializable, Observer {
         sortedState = SortedState.NONE;
     }
 
+    // Initialisiert das Layout der Benutzeroberfläche
     public void initializeLayout() {
-        movieListView.setItems(observableMovies);   // set the items of the listview to the observable list
-        movieListView.setCellFactory(movieListView -> new MovieCell(onAddToWatchlistClicked)); // apply custom cells to the listview
+        movieListView.setItems(observableMovies);
+        movieListView.setCellFactory(movieListView -> new MovieCell(onAddToWatchlistClicked));
 
-        // genre combobox
-        Object[] genres = Genre.values();   // get all genres
-        genreComboBox.getItems().add("No filter");  // add "no filter" to the combobox
-        genreComboBox.getItems().addAll(genres);    // add all genres to the combobox
+        Object[] genres = Genre.values();
+        genreComboBox.getItems().add("No filter");
+        genreComboBox.getItems().addAll(genres);
         genreComboBox.setPromptText("Filter by Genre");
 
-        // year combobox
-        releaseYearComboBox.getItems().add("No filter");  // add "no filter" to the combobox
-        // fill array with numbers from 1900 to 2023
+        releaseYearComboBox.getItems().add("No filter");
         Integer[] years = new Integer[124];
         for (int i = 0; i < years.length; i++) {
             years[i] = 1900 + i;
         }
-        releaseYearComboBox.getItems().addAll(years);    // add all years to the combobox
+        releaseYearComboBox.getItems().addAll(years);
         releaseYearComboBox.setPromptText("Filter by Release Year");
 
-        // rating combobox
-        ratingFromComboBox.getItems().add("No filter");  // add "no filter" to the combobox
-        // fill array with numbers from 0 to 10
+        ratingFromComboBox.getItems().add("No filter");
         Integer[] ratings = new Integer[11];
         for (int i = 0; i < ratings.length; i++) {
             ratings[i] = i;
         }
-        ratingFromComboBox.getItems().addAll(ratings);    // add all ratings to the combobox
+        ratingFromComboBox.getItems().addAll(ratings);
         ratingFromComboBox.setPromptText("Filter by Rating");
     }
 
-
+    // Setzt die gesamte Filmliste
     public void setMovies(List<Movie> movies) {
         allMovies = movies;
     }
 
+    // Setzt die angezeigte Filmliste
     public void setMovieList(List<Movie> movies) {
         observableMovies.clear();
         observableMovies.addAll(movies);
     }
 
-    // TODO statePattern hier statt mit enum
-    public void sortMovies(){
-        if(movieSorter.getState() instanceof UnsortedState || movieSorter.getState() instanceof DescendingState) {
-            //if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
-            // sortMovies(SortedState.ASCENDING);
+    // Sortiert die Filme
+    public void sortMovies() {
+        if (movieSorter.getState() instanceof UnsortedState || movieSorter.getState() instanceof DescendingState) {
             movieSorter.setState(new AscendingState());
             movieSorter.sortMovies(observableMovies);
-//            sortedState = SortedState.ASCENDING;
-        }
-        else if (movieSorter.getState() instanceof AscendingState) {
-            //} else if (sortedState == SortedState.ASCENDING) {
-            // sortMovies(SortedState.DESCENDING);
+        } else if (movieSorter.getState() instanceof AscendingState) {
             movieSorter.setState(new DescendingState());
             movieSorter.sortMovies(observableMovies);
-//            sortedState = SortedState.DESCENDING;
         }
     }
+
     // sort movies based on sortedState
     // by default sorted state is NONE
     // afterwards it switches between ascending and descending
@@ -186,10 +178,11 @@ public class MovieListController implements Initializable, Observer {
 //        }
 //    }
 
-    public List<Movie> filterByQuery(List<Movie> movies, String query){
-        if(query == null || query.isEmpty()) return movies;
+    // Filtert die Filme anhand einer Suchanfrage
+    public List<Movie> filterByQuery(List<Movie> movies, String query) {
+        if (query == null || query.isEmpty()) return movies;
 
-        if(movies == null) {
+        if (movies == null) {
             throw new IllegalArgumentException("movies must not be null");
         }
 
@@ -199,16 +192,18 @@ public class MovieListController implements Initializable, Observer {
                 .toList();
     }
 
-    public List<Movie> filterByGenre(List<Movie> movies, Genre genre){
-        if(genre == null) return movies;
+    // Filtert die Filme anhand des Genres
+    public List<Movie> filterByGenre(List<Movie> movies, Genre genre) {
+        if (genre == null) return movies;
 
-        if(movies == null) {
+        if (movies == null) {
             throw new IllegalArgumentException("movies must not be null");
         }
 
         return movies.stream().filter(movie -> movie.getGenres().contains(genre)).toList();
     }
 
+    // Anwendet alle Filter auf die Filme
     public void applyAllFilters(String searchQuery, Object genre) {
         List<Movie> filteredMovies = allMovies;
 
@@ -224,6 +219,7 @@ public class MovieListController implements Initializable, Observer {
         observableMovies.addAll(filteredMovies);
     }
 
+    // Event-Handler für den Klick auf den Suchen-Button
     public void searchBtnClicked(ActionEvent actionEvent) {
         String searchQuery = searchField.getText().trim().toLowerCase();
         String releaseYear = validateComboboxValue(releaseYearComboBox.getSelectionModel().getSelectedItem());
@@ -231,7 +227,7 @@ public class MovieListController implements Initializable, Observer {
         String genreValue = validateComboboxValue(genreComboBox.getSelectionModel().getSelectedItem());
 
         Genre genre = null;
-        if(genreValue != null) {
+        if (genreValue != null) {
             genre = Genre.valueOf(genreValue);
         }
 
@@ -239,24 +235,25 @@ public class MovieListController implements Initializable, Observer {
 
         setMovies(movies);
         setMovieList(movies);
-        // applyAllFilters(searchQuery, genre);
 
-        if(sortedState != SortedState.NONE) {
+        if (sortedState != SortedState.NONE) {
             sortMovies();
         }
     }
 
+    // Validiert den Wert einer ComboBox und gibt ihn zurück
     public String validateComboboxValue(Object value) {
-        if(value != null && !value.toString().equals("No filter")) {
+        if (value != null && !value.toString().equals("No filter")) {
             return value.toString();
         }
         return null;
     }
 
+    // Ruft die Filmdaten aus der API ab
     public List<Movie> getMovies(String searchQuery, Genre genre, String releaseYear, String ratingFrom) {
-        try{
+        try {
             return MovieAPI.getAllMovies(searchQuery, genre, releaseYear, ratingFrom);
-        }catch (MovieApiException e){
+        } catch (MovieApiException e) {
             System.out.println(e.getMessage());
             UserDialog dialog = new UserDialog("MovieApi Error", "Could not load movies from api.");
             dialog.show();
@@ -264,15 +261,16 @@ public class MovieListController implements Initializable, Observer {
         }
     }
 
+    // Event-Handler für den Klick auf den Sortieren-Button
     public void sortBtnClicked(ActionEvent actionEvent) {
         sortMovies();
     }
 
-
-    // TODO update logic with alert
+//TODO update observer logic with alert
+    // Aktualisiert die Filmliste basierend auf Änderungen in der Watchlist
     @Override
     public void update(ObservableMessages messages) {
-        if(messages == ObservableMessages.ADDED){
+        if (messages == ObservableMessages.ADDED) {
             new Alert(Alert.AlertType.INFORMATION, "Movie was successfully added to the Watchlist", ButtonType.OK).show();
         } else {
             new Alert(Alert.AlertType.WARNING, "Movie is already in Watchlist!", ButtonType.OK).show();
