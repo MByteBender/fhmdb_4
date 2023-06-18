@@ -45,7 +45,7 @@ public class DatabaseManager {
         return connectionSource;
     }
 
-    // Erstellt eine neue ConnectionSource zur Datenbank
+    // Erstellt eine neue ConnectionSource zur Datenbank mit url dem username und passwort
     private static void createConnectionSource() throws DataBaseException {
         try {
             connectionSource = new JdbcConnectionSource(DB_URL, user, pass);

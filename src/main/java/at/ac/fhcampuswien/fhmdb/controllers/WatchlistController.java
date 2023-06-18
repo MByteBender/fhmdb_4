@@ -26,12 +26,13 @@ public class WatchlistController implements Initializable {
 
     protected ObservableList<WatchlistMovieEntity> observableWatchlist = FXCollections.observableArrayList();
 
+    // Event-Handler für den Klick auf "Remove from Watchlist"
     private final ClickEventHandler onRemoveFromWatchlistClicked = (o) -> {
         if (o instanceof WatchlistMovieEntity) {
             WatchlistMovieEntity watchlistMovieEntity = (WatchlistMovieEntity) o;
 
             try {
-                WatchlistRepository watchlistRepository =  WatchlistRepository.getInstance();
+                WatchlistRepository watchlistRepository = WatchlistRepository.getInstance();
                 watchlistRepository.removeFromWatchlist(watchlistMovieEntity);
                 observableWatchlist.remove(watchlistMovieEntity);
             } catch (DataBaseException e) {
@@ -42,12 +43,13 @@ public class WatchlistController implements Initializable {
         }
     };
 
+    // Initialisiert den Controller
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         List<WatchlistMovieEntity> watchlist = new ArrayList<>();
         try {
-            watchlistRepository =  WatchlistRepository.getInstance();
+            watchlistRepository = WatchlistRepository.getInstance();
             watchlist = getWatchlist();
             observableWatchlist.addAll(getWatchlist());
             watchlistView.setItems(observableWatchlist);
@@ -59,14 +61,14 @@ public class WatchlistController implements Initializable {
             e.printStackTrace();
         }
 
-        if(watchlist.size() == 0) {
+        if (watchlist.size() == 0) {
             watchlistView.setPlaceholder(new javafx.scene.control.Label("Watchlist is empty"));
         }
-
 
         System.out.println("WatchlistController initialized");
     }
 
+    // Ruft die Watchlist aus der Datenbank ab
     private List<WatchlistMovieEntity> getWatchlist() throws DataBaseException {
         return watchlistRepository.readWatchlist();
     }

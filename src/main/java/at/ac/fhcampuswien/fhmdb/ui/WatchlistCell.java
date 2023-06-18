@@ -24,7 +24,7 @@ public class WatchlistCell extends ListCell<WatchlistMovieEntity> {
 
     public WatchlistCell(ClickEventHandler removeFromWatchlistClick) {
         super();
-        // color scheme
+        // Setze das Aussehen der Buttons und Labels
         detailBtn.setStyle("-fx-background-color: #f5c518;");
         HBox.setMargin(detailBtn, new Insets(0, 10, 0, 10));
         removeBtn.setStyle("-fx-background-color: #f5c518;");
@@ -38,11 +38,12 @@ public class WatchlistCell extends ListCell<WatchlistMovieEntity> {
         header.setHgrow(detailBtn, Priority.ALWAYS);
         title.setMaxWidth(Double.MAX_VALUE);
 
-        // layout
+        // Setze das Layout der Zelle
         title.fontProperty().set(title.getFont().font(20));
         description.setWrapText(true);
         layout.setPadding(new Insets(10));
 
+        // Setze die Funktionalität des "Show Details"-Buttons
         detailBtn.setOnMouseClicked(mouseEvent -> {
             if (collapsedDetails) {
                 layout.getChildren().add(getDetails());
@@ -56,11 +57,13 @@ public class WatchlistCell extends ListCell<WatchlistMovieEntity> {
             setGraphic(layout);
         });
 
+        // Setze die Funktionalität des "Remove"-Buttons
         removeBtn.setOnMouseClicked(mouseEvent -> {
             removeFromWatchlistClick.onClick(getItem());
         });
     }
 
+    // Erstelle das Layout für die Details des Films
     private VBox getDetails() {
         VBox details = new VBox();
         Label releaseYear = new Label("Release Year: " + getItem().getReleaseYear());
@@ -76,14 +79,17 @@ public class WatchlistCell extends ListCell<WatchlistMovieEntity> {
         details.getChildren().add(length);
         return details;
     }
+
     @Override
     protected void updateItem(WatchlistMovieEntity watchlistMovieEntity, boolean empty) {
         super.updateItem(watchlistMovieEntity, empty);
 
         if (empty || watchlistMovieEntity == null) {
+            // Die Zelle ist leer oder der Film ist null, daher wird der Inhalt der Zelle geleert
             setGraphic(null);
             setText(null);
         } else {
+            // Setze das Aussehen der Zelle und aktualisiere den Inhalt entsprechend des WatchlistMovieEntities
             this.getStyleClass().add("movie-cell");
             title.setText(watchlistMovieEntity.getTitle());
             description.setText(
@@ -94,6 +100,7 @@ public class WatchlistCell extends ListCell<WatchlistMovieEntity> {
 
             description.setMaxWidth(this.getScene().getWidth() - 30);
 
+            // Erstelle eine Zeichenkette mit den Genres des Films
             String genres = watchlistMovieEntity.getGenres()
                     .stream()
                     .map(Enum::toString)
@@ -103,4 +110,3 @@ public class WatchlistCell extends ListCell<WatchlistMovieEntity> {
         }
     }
 }
-

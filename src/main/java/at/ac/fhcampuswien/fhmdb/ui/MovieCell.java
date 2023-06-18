@@ -38,7 +38,6 @@ public class MovieCell extends ListCell<Movie> {
         header.setHgrow(title, Priority.ALWAYS);
         header.setHgrow(detailBtn, Priority.ALWAYS);
         title.setMaxWidth(Double.MAX_VALUE);
-        //detailBtn.setMaxWidth(Double.MAX_VALUE);
 
         // layout
         title.fontProperty().set(title.getFont().font(20));
@@ -63,6 +62,7 @@ public class MovieCell extends ListCell<Movie> {
         });
     }
 
+    // Erstellt ein VBox-Layout mit detaillierten Informationen zum Film
     private VBox getDetails() {
         VBox details = new VBox();
         Label releaseYear = new Label("Release Year: " + getItem().getReleaseYear());
@@ -88,6 +88,7 @@ public class MovieCell extends ListCell<Movie> {
         details.getChildren().add(mainCast);
         return details;
     }
+
     @Override
     protected void updateItem(Movie movie, boolean empty) {
         super.updateItem(movie, empty);
@@ -96,6 +97,7 @@ public class MovieCell extends ListCell<Movie> {
             setGraphic(null);
             setText(null);
         } else {
+            // Styling der Zelle
             this.getStyleClass().add("movie-cell");
             title.setText(movie.getTitle());
             detail.setText(
@@ -104,16 +106,17 @@ public class MovieCell extends ListCell<Movie> {
                             : "No description available"
             );
 
+            // Zusammenführen der Genres in einen String
             String genres = movie.getGenres()
                     .stream()
                     .map(Enum::toString)
                     .collect(Collectors.joining(", "));
             genre.setText(genres);
 
+            // Maximale Breite der Detailbeschreibung festlegen
             detail.setMaxWidth(this.getScene().getWidth() - 30);
 
             setGraphic(layout);
         }
     }
 }
-

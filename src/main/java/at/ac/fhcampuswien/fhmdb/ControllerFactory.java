@@ -20,6 +20,7 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
     }
 
     @Override
+    // setcontrollerfactory in fhmdbApplication greift auf call methode von dieser klasse zu
     //returns singleton instance of controller, because it is not possible to implement singleton in javafx
     public Object call(Class<?> aClass) {
         try{

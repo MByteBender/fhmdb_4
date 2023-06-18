@@ -40,34 +40,40 @@ public class MainController implements Observer {
         FXMLLoader loader = new FXMLLoader(MainController.class.getResource(UIComponent.HOME.path));
         loader.setControllerFactory(controllerFactory);
 
-
+        // Initialisierung der Hamburger-Animation
         transition = new HamburgerBasicCloseTransition(hamburgerMenu);
         transition.setRate(-1);
         drawer.toBack();
 
+        // Event-Handler für den Klick auf den Hamburger-Button
         hamburgerMenu.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
             toggleMenuDrawer();
         });
-        // start with home view
+
+        // Start mit der Home-Ansicht
         navigateToMovielist();
     }
 
-    private void toggleHamburgerTransitionState(){
+    // Ändert den Zustand der Hamburger-Animation
+    private void toggleHamburgerTransitionState() {
         transition.setRate(transition.getRate() * -1);
         transition.play();
     }
 
-    private void toggleMenuDrawer(){
+    // Ändert den Zustand des Menü-Drawers und animiert ihn
+    private void toggleMenuDrawer() {
         toggleHamburgerTransitionState();
 
-        if(isMenuCollapsed) {
-            TranslateTransition translateTransition=new TranslateTransition(Duration.seconds(0.5), drawer);
+        if (isMenuCollapsed) {
+            // Menü-Drawer einblenden
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), drawer);
             translateTransition.setByX(130);
             translateTransition.play();
             isMenuCollapsed = false;
             drawer.toFront();
         } else {
-            TranslateTransition translateTransition=new TranslateTransition(Duration.seconds(0.5), drawer);
+            // Menü-Drawer ausblenden
+            TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.5), drawer);
             translateTransition.setByX(-130);
             translateTransition.play();
             isMenuCollapsed = true;
@@ -75,7 +81,8 @@ public class MainController implements Observer {
         }
     }
 
-    public void setContent(String fxmlPath){
+    // Setzt den Inhalt des Hauptbereichs auf die angegebene FXML-Datei
+    public void setContent(String fxmlPath) {
         FXMLLoader loader = new FXMLLoader(MainController.class.getResource(fxmlPath));
         try {
             mainPane.setCenter(loader.load());
@@ -83,12 +90,13 @@ public class MainController implements Observer {
             e.printStackTrace();
         }
 
-        if(!isMenuCollapsed){
+        // Schließt den Menü-Drawer, falls geöffnet
+        if (!isMenuCollapsed) {
             toggleMenuDrawer();
         }
     }
 
-    // count which actor is in the most movies
+    // Zählt, welcher Schauspieler in den meisten Filmen vorkommt
     public String getMostPopularActor(List<Movie> movies) {
         String actor = movies.stream()
                 .flatMap(movie -> movie.getMainCast().stream())
@@ -102,6 +110,7 @@ public class MainController implements Observer {
         return actor;
     }
 
+    // Ermittelt die Länge des längsten Filmtitels
     public int getLongestMovieTitle(List<Movie> movies) {
         return movies.stream()
                 .mapToInt(movie -> movie.getTitle().length())
@@ -109,36 +118,41 @@ public class MainController implements Observer {
                 .orElse(0);
     }
 
+    // Zählt die Anzahl der Filme eines bestimmten Regisseurs
     public long countMoviesFrom(List<Movie> movies, String director) {
         return movies.stream()
                 .filter(movie -> movie.getDirectors().contains(director))
                 .count();
     }
 
+    // Filtert Filme nach Jahren
     public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
         return movies.stream()
                 .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
                 .collect(Collectors.toList());
     }
 
+    // Navigiert zur Watchlist-Ansicht
     @FXML
     public void navigateToWatchlist() {
         setContent(UIComponent.WATCHLIST.path);
     }
 
+    // Navigiert zur MovieList-Ansicht
     @FXML
     public void navigateToMovielist() {
         setContent(UIComponent.MOVIELIST.path);
     }
 
 
-    //TODO alert of observer
+
+    // Aktualisiert die Ansicht basierend auf Änderungen in der Watchlist
     @Override
     public void update(ObservableMessages messages) {
-        if(messages == ObservableMessages.ADDED){
+       /* if (messages == ObservableMessages.ADDED) {
             new Alert(Alert.AlertType.INFORMATION, "Movie was successfully added to the Watchlist", ButtonType.OK).show();
         } else {
             new Alert(Alert.AlertType.WARNING, "Movie is already in Watchlist!", ButtonType.OK).show();
-        }
+        }*/
     }
 }
